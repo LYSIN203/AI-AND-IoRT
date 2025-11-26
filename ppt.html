@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IoRT & AI - Final Deck</title>
+    
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-deep: #050505;
+            --bg-gradient: radial-gradient(circle at 20% 50%, #1a1a2e, #050505 70%);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+            --primary: #3b82f6;    /* Blue */
+            --secondary: #8b5cf6;  /* Purple */
+            --success: #10b981;    /* Green */
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --blur-amount: 15px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-deep);
+            background-image: var(--bg-gradient);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            touch-action: pan-y;
+        }
+
+        /* --- LAYOUT --- */
+        #deck {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* --- ANIMATION --- */
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            opacity: 0;
+            transform: scale(1.05);
+            filter: blur(15px);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0px);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .slide {
+                justify-content: flex-start;
+                padding-top: 50px;
+                padding-bottom: 100px;
+                overflow-y: auto;
+                display: block;
+            }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(120deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            width: fit-content;
+        }
+
+        p { font-size: 1rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+        strong { color: #fff; font-weight: 700; }
+
+        /* --- COMPONENTS --- */
+        .glass-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .glass-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+
+        .team-photo {
+            width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 10px;
+            border: 2px solid var(--primary); overflow: hidden; background: #222;
+        }
+        .team-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        @media (max-width: 768px) {
+            .grid-3, .grid-2, .team-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Diagram Style (Slide 4) */
+        .diagram-container {
+            display: flex; align-items: stretch; gap: 10px; text-align: center; width: 100%;
+        }
+        .diagram-step {
+            flex: 1; background: rgba(255,255,255,0.03); 
+            border: 1px dashed var(--primary); padding: 20px; border-radius: 12px;
+            position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .arrow { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); }
+        @media(max-width:768px){ 
+            .diagram-container{ flex-direction:column; } 
+            .arrow{ transform: rotate(90deg); margin: 10px 0; } 
+        }
+
+        /* Links */
+        .source-btn {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding: 5px 10px;
+            font-size: 0.75rem; color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px; text-decoration: none; width: fit-content;
+        }
+        .source-btn:hover { background: var(--primary); color: white; }
+
+        /* --- CONTROLS --- */
+        .controls { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 100; }
+        .btn-circle {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-circle:hover { background: var(--primary); }
+
+        /* FULLSCREEN BUTTON (SMART STYLE) */
+        .fullscreen-btn {
+            position: absolute; top: 20px; right: 20px;
+            padding: 8px 15px; border-radius: 20px;
+            background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer; z-index: 100; font-size: 0.85rem; font-family: inherit;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+        }
+        .fullscreen-btn:hover { background: var(--primary); border-color: var(--primary); }
+
+        /* Style saat mode fullscreen aktif (Mengecil & Transparan) */
+        body.is-fullscreen .fullscreen-btn {
+            padding: 8px; /* Kecilkan padding */
+            width: 35px; height: 35px; /* Jadi kotak kecil */
+            justify-content: center;
+            opacity: 0.3; /* Transparan */
+            background: transparent;
+            border: none;
+        }
+        body.is-fullscreen .fullscreen-btn span { display: none; } /* Sembunyikan teks */
+        body.is-fullscreen .fullscreen-btn:hover { opacity: 1; background: rgba(0,0,0,0.8); }
+
+        .progress-bar {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%; transition: width 0.5s; z-index: 100;
+        }
+
+        .touch-left, .touch-right { position: absolute; top:0; bottom:0; width: 20%; z-index: 50; }
+        .touch-left { left: 0; }
+        .touch-right { right: 0; }
+    </style>
+</head>
+<body>
+
+<div id="deck">
+    <!-- SMART FULLSCREEN BUTTON -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()" id="fsBtn">
+        <i class="fa-solid fa-expand" id="fsIcon"></i> <span>Fullscreen (F)</span>
+    </button>
+
+    <div class="touch-left" onclick="prevSlide()"></div>
+    <div class="touch-right" onclick="nextSlide()"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <div class="slide active">
+        <div style="text-align: center;">
+            <div style="display:inline-block; padding: 5px 15px; border: 1px solid var(--primary); border-radius: 20px; color: var(--primary); margin-bottom: 20px;">
+                Final Project Presentation
+            </div>
+            <h1>Internet of Robotic Things<br>(IoRT) & AI</h1>
+            <p style="font-size: 1.2rem;">Integrating Autonomous Robotics, IoT, and Artificial Intelligence.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: TEAM (6 Members) -->
+    <div class="slide">
+        <h2>Meet Our Team</h2>
+        <div class="team-grid">
+            <!-- LEADER -->
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo">
+                    <!-- USE DIRECT LINK (.jpg/.png) HERE -->
+                    <img src="https://i.postimg.cc/8P8JXDSw/1755305195308.png/150" alt="Leader"> 
+                </div>
+                <strong>Name 1</strong><br><small style="color:var(--primary); font-weight:bold;">Project Leader</small>
+            </div>
+            <!-- CORE TEAM -->
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo"><img src="https://via.placeholder.com/150" alt="Team"></div>
+                <strong>Name 2</strong><br><small style="color:var(--text-muted)">Core Team</small>
+            </div>
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo"><img src="https://via.placeholder.com/150" alt="Team"></div>
+                <strong>Name 3</strong><br><small style="color:var(--text-muted)">Core Team</small>
+            </div>
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo"><img src="https://via.placeholder.com/150" alt="Team"></div>
+                <strong>Name 4</strong><br><small style="color:var(--text-muted)">Core Team</small>
+            </div>
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo"><img src="https://via.placeholder.com/150" alt="Team"></div>
+                <strong>Name 5</strong><br><small style="color:var(--text-muted)">Core Team</small>
+            </div>
+            <div class="glass-box" style="text-align:center; padding: 15px;">
+                <div class="team-photo"><img src="https://via.placeholder.com/150" alt="Team"></div>
+                <strong>Name 6</strong><br><small style="color:var(--text-muted)">Core Team</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: CONCEPT -->
+    <div class="slide">
+        <h2>1. The Concept: IoRT</h2>
+        <div class="grid-2">
+            <div>
+                <p><strong>Definition:</strong></p>
+                <p style="font-size:1.1rem; color:white;">The Internet of Robotic Things (IoRT) is an advanced concept where intelligent devices can monitor events, fuse sensor data, and decide a course of action to control physical objects.</p>
+                <p>Essentially, it adds <strong>"Embodied Intelligence"</strong> (Robots) to the standard IoT network, allowing digital systems to interact physically with the real world.</p>
+            </div>
+            <div class="glass-box" style="border-left: 4px solid var(--primary); display:flex; flex-direction:column; justify-content:center;">
+                <i class="fa-solid fa-book-open" style="font-size:2rem; color:var(--primary); margin-bottom:10px;"></i>
+                <p style="font-style:italic;">"IoRT introduces a new class of intelligent devices... fusing sensor data to determine a best course of action."</p>
+                <a href="https://ieeexplore.ieee.org/document/8663806" target="_blank" class="source-btn">
+                    <i class="fa-solid fa-check"></i> Ref: IEEE Access (Research)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: MECHANISM (Arrow Diagram) -->
+    <div class="slide">
+        <h2>2. Mechanism: Efficiency Loop</h2>
+        <p>How does the system think? It follows a 3-step cycle:</p>
+        
+        <div class="diagram-container">
+            <div class="diagram-step">
+                <i class="fa-solid fa-eye" style="font-size:2.5rem; margin-bottom:15px; color:var(--success);"></i>
+                <h3 style="color:var(--success); margin-bottom:10px;">1. Perception</h3>
+                <p style="font-size:0.95rem;">Sensors (Vision, Lidar) collect raw data from the environment.</p>
+                <p style="font-size:0.8rem; opacity:0.7;">Example: A robot 'seeing' a wall.</p>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="diagram-step">
+                <i class="fa-solid fa-brain" style="font-size:2.5rem; margin-bottom:15px; color:var(--success);"></i>
+                <h3 style="color:var(--success); margin-bottom:10px;">2. Analysis</h3>
+                <p style="font-size:0.95rem;">AI processes raw data to detect patterns or anomalies.</p>
+                <p style="font-size:0.8rem; opacity:0.7;">Example: Deciding to turn left.</p>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="diagram-step">
+                <i class="fa-solid fa-hand-sparkles" style="font-size:2.5rem; margin-bottom:15px; color:var(--success);"></i>
+                <h3 style="color:var(--success); margin-bottom:10px;">3. Action</h3>
+                <p style="font-size:0.95rem;">Actuators execute physical tasks based on AI decisions.</p>
+                <p style="font-size:0.8rem; opacity:0.7;">Example: Wheels moving forward.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: IMPACT -->
+    <div class="slide">
+        <h2>3. Impact & Scale</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3>🏠 Home Scale</h3>
+                <p><strong>Smart Vacuums:</strong> Robots that map the entire house layout and are controlled via Smartphone apps.</p>
+                <p><em>Benefit:</em> Automating chores efficiently.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🏫 Lab Scale</h3>
+                <p><strong>AGV (PENS):</strong> Automated Guided Vehicles used in mini-warehouses for logistics study.</p>
+                <p><em>Benefit:</em> Researching autonomous navigation.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🏭 Industry Scale</h3>
+                <p><strong>Predictive Maintenance:</strong> IoT sensors detect machine vibration/heat to predict failure before it happens.</p>
+                <p><em>Benefit:</em> Saving millions in downtime.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: STATS -->
+    <div class="slide">
+        <h2>4. AI Landscape in Indonesia</h2>
+        <div class="grid-3">
+            <div class="glass-box" style="text-align:center;">
+                <h1 style="color:var(--success);">92%</h1>
+                <p>Knowledge workers in Indonesia are already using GenAI tools.</p>
+                <a href="https://news.microsoft.com/id-id/2024/06/11/microsoft-and-linkedin-release-the-2024-work-trend-index-on-the-state-of-ai-at-work-in-indonesia/" target="_blank" class="source-btn"><i class="fa-brands fa-microsoft"></i> Microsoft (2024)</a>
+            </div>
+            <div class="glass-box" style="text-align:center;">
+                <h1 style="color:var(--success);">$366B</h1>
+                <p>Potential GDP contribution by 2030 through AI adoption.</p>
+                <a href="https://www.thejakartapost.com/news/2020/10/09/ai-to-bring-in-366b-to-indonesias-gdp-by-2030.html" target="_blank" class="source-btn"><i class="fa-solid fa-chart-line"></i> Kearney</a>
+            </div>
+            <div class="glass-box" style="text-align:center;">
+                <h1 style="color:var(--success);">64%</h1>
+                <p>Of the public has used AI tools at least once.</p>
+                <a href="https://databoks.katadata.co.id/publikasi/2025/01/23/kedaulatan-ai-untuk-memberdayakan-indonesia" target="_blank" class="source-btn"><i class="fa-solid fa-check"></i> Katadata</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: DAILY APPS -->
+    <div class="slide">
+        <h2>5. Daily AI Tools</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3 style="color:#4aaeff; margin-bottom:10px;"><i class="fa-solid fa-star"></i> Gemini</h3>
+                <p><strong>What is it?</strong> Google's multimodal AI model.</p>
+                <p><strong>Capability:</strong> Seamlessly understands and generates text, code, images, and video within the Google ecosystem.</p>
+            </div>
+            <div class="glass-box">
+                <h3 style="color:#10a37f; margin-bottom:10px;"><i class="fa-solid fa-robot"></i> ChatGPT</h3>
+                <p><strong>What is it?</strong> OpenAI's pioneer chatbot.</p>
+                <p><strong>Capability:</strong> Famous for its human-like conversational abilities, reasoning, and broad knowledge base.</p>
+            </div>
+            <div class="glass-box">
+                <h3 style="color:#6366f1; margin-bottom:10px;"><i class="fa-solid fa-code"></i> DeepSeek</h3>
+                <p><strong>What is it?</strong> An efficient Open Source model.</p>
+                <p><strong>Capability:</strong> Gaining popularity for its strong performance in coding tasks and logical reasoning at a lower cost.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: SMEs -->
+    <div class="slide">
+        <h2>6. Empowering SMEs</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3>📄 Automation</h3>
+                <p><strong>Tool:</strong> Mekari / Jurnal</p>
+                <p><strong>Explanation:</strong> Automatically generating invoices and financial reports, saving hours of manual admin work.</p>
+            </div>
+            <div class="glass-box">
+                <h3>📦 Inventory</h3>
+                <p><strong>Tool:</strong> Demand Prediction</p>
+                <p><strong>Explanation:</strong> Using AI to analyze sales history and predict exactly which stock will run out next week.</p>
+            </div>
+            <div class="glass-box">
+                <h3>📢 Marketing</h3>
+                <p><strong>Tool:</strong> Content GenAI</p>
+                <p><strong>Explanation:</strong> Using AI to write captions and design posters for Social Media instantly.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: INDUSTRY 1 -->
+    <div class="slide">
+        <h2>7. Large Industries: Mfg & Agri</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3>🐟 eFishery</h3>
+                <p><strong>Sector:</strong> Aquaculture</p>
+                <p><strong>Tech:</strong> A smart feeder that detects fish appetite via sensors to dispense food automatically, reducing waste.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🐔 Chickin</h3>
+                <p><strong>Sector:</strong> Poultry</p>
+                <p><strong>Tech:</strong> IoT sensors that monitor coop temperature and humidity in real-time to reduce chicken mortality rates.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🏭 Manufacturing</h3>
+                <p><strong>Sector:</strong> Supply Chain</p>
+                <p><strong>Tech:</strong> AI forecasting raw material needs to prevent overstocking or shortages in factories.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: INDUSTRY 2 -->
+    <div class="slide">
+        <h2>8. Resources & Tech</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3>⛏️ Mining</h3>
+                <p><strong>Location:</strong> Papua</p>
+                <p><strong>Application:</strong> Using AI to optimize heavy equipment routes in remote areas, saving fuel and improving safety.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🛡️ Defense</h3>
+                <p><strong>Company:</strong> PT PAL</p>
+                <p><strong>Application:</strong> Developing Unmanned Submarines powered by AI for autonomous underwater surveillance.</p>
+            </div>
+            <div class="glass-box">
+                <h3>💰 Finance</h3>
+                <p><strong>Use Case:</strong> Credit Scoring</p>
+                <p><strong>Application:</strong> Analyzing alternative data to assess creditworthiness, increasing loan approval accuracy by 15%.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: FUTURE -->
+    <div class="slide">
+        <h2>9. Future Horizon</h2>
+        <div class="grid-3">
+            <div class="glass-box">
+                <h3>🇮🇩 Localized AI</h3>
+                <p><strong>Trend:</strong> Moving away from western-centric models.</p>
+                <p><strong>Detail:</strong> Creating AI that deeply understands Indonesian culture, slang, and 700+ local languages.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🎓 Education</h3>
+                <p><strong>Trend:</strong> Early Tech Literacy.</p>
+                <p><strong>Detail:</strong> Curriculum changes where Coding and AI logic are introduced as early as 4th Grade in schools.</p>
+            </div>
+            <div class="glass-box">
+                <h3>🏙️ Smart City (IKN)</h3>
+                <p><strong>Trend:</strong> AI-Native City.</p>
+                <p><strong>Detail:</strong> Companies like <strong>Nodeflux</strong> implementing Computer Vision (CCTV) to manage traffic and safety in the new capital.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: CONCLUSION -->
+    <div class="slide">
+        <div style="text-align: center;">
+            <h2>Key Takeaways</h2>
+            <div class="glass-box" style="margin-top:20px; text-align:left; display:inline-block;">
+                <ul style="list-style:none;">
+                    <li style="margin-bottom:10px;">✅ <strong>Connected:</strong> Robots are no longer standalone; they are part of a network.</li>
+                    <li style="margin-bottom:10px;">✅ <strong>Creator Mindset:</strong> Indonesia is shifting from just using AI to creating AI solutions.</li>
+                    <li>✅ <strong>Efficiency:</strong> From SMEs to Mining, AI drives massive cost and time savings.</li>
+                </ul>
+            </div>
+            <h1 style="margin-top: 40px;">Thank You</h1>
+        </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <div class="btn-circle" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="btn-circle" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progressBar');
+    const fsBtn = document.getElementById('fsBtn');
+    const fsIcon = document.getElementById('fsIcon');
+    
+    function updateSlide() {
+        slides.forEach(s => { s.classList.remove('active'); if(s.scrollTop) s.scrollTop = 0; });
+        slides[currentSlide].classList.add('active');
+        progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+    }
+
+    function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlide(); } }
+    function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlide(); } }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+
+    // LISTENER untuk mendeteksi perubahan mode Fullscreen
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            // Jika masuk fullscreen
+            document.body.classList.add('is-fullscreen');
+            fsIcon.classList.remove('fa-expand');
+            fsIcon.classList.add('fa-compress');
+        } else {
+            // Jika keluar fullscreen
+            document.body.classList.remove('is-fullscreen');
+            fsIcon.classList.remove('fa-compress');
+            fsIcon.classList.add('fa-expand');
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'f') toggleFullscreen();
+    });
+
+    // Swipe Logic
+    let touchStartX = 0;
+    const deck = document.getElementById('deck');
+    deck.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, {passive: true});
+    deck.addEventListener('touchend', e => {
+        if (e.changedTouches[0].screenX < touchStartX - 50) nextSlide();
+        if (e.changedTouches[0].screenX > touchStartX + 50) prevSlide();
+    }, {passive: true});
+
+    updateSlide();
+</script>
+
+</body>
+</html>
+
+
